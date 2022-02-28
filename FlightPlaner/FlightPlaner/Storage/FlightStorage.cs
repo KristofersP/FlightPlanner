@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FlightPlanner.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlightPlanner.Storage
 {
@@ -9,7 +10,6 @@ namespace FlightPlanner.Storage
     {
         private static List<Flight> _flights = new List<Flight>();
         private static int _id;
-
 
         public static Flight AddFlight(AddFlightRequest request)
         {
@@ -28,9 +28,10 @@ namespace FlightPlanner.Storage
             return flight;
         }
 
-        internal static void Clear()
+        public static void Clear()
         {
-            throw new NotImplementedException();
+            _id = 0;
+            _flights.Clear();
         }
 
         public static Flight ConvertToFlight(AddFlightRequest request)
@@ -62,9 +63,17 @@ namespace FlightPlanner.Storage
 
         }
 
-        public static PageResult SearchFlights()
+        public static PageResult SearchFlights(SearchFlightRequest request,FlightPlannerDbContext context)
         {
-            return new PageResult(_flights);
+            var flight = context.Flights
+                .Include(f => f.From)
+                .Include(f => f.To)
+                .Where(f =>
+                    f.From.AirportName.ToLower().Trim() == request.From.ToLower().Trim() &&
+                    f.To.AirportName.ToLower().Trim() == request.To.ToLower().Trim() &&
+                   f.DepartureTime.Substring(0, 10) == request.DepartureDate.Substring(0, 10)).ToList();
+
+            return new PageResult(flight);
         }
 
         public static void DeleteFlight(int id)
@@ -79,15 +88,15 @@ namespace FlightPlanner.Storage
 
         }
 
-        public static List<Airport> FindAirports(string search)
+        public static List<Airport> FindAirports(string search, FlightPlannerDbContext context)
         {
             search = search.ToLower().Trim();
 
-            var fromAirport = _flights.Where(f => f.From.AirportName.ToLower().Trim().Contains(search) ||
+            var fromAirport = context.Flights.Where(f => f.From.AirportName.ToLower().Trim().Contains(search) ||
             f.From.Country.ToLower().Trim().Contains(search) ||
             f.From.City.ToLower().Trim().Contains(search)).Select(a => a.From).ToList();
 
-            var toAirport = _flights.Where(f => f.To.AirportName.ToLower().Trim().Contains(search) ||
+            var toAirport = context.Flights.Where(f => f.To.AirportName.ToLower().Trim().Contains(search) ||
             f.To.Country.ToLower().Trim().Contains(search) ||
             f.To.City.ToLower().Trim().Contains(search)).Select(a => a.To).ToList();
 
