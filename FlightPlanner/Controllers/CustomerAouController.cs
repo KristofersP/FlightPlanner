@@ -1,5 +1,6 @@
 ﻿using FlighPlanner.Models;
 using FlighPlanner.Storage;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlighPlanner.Controllers
@@ -11,6 +12,7 @@ namespace FlighPlanner.Controllers
         private static readonly object _lock = new object();
 
         [HttpGet]
+        [EnableCors]
         [Route("airports")]
         public IActionResult SearchAirports(string search)
         {
@@ -19,6 +21,7 @@ namespace FlighPlanner.Controllers
         }
 
         [HttpPost]
+        [EnableCors]
         [Route("flights/search")]
         public IActionResult SearchFlights(SearchFlightRequest request)
         {
@@ -35,6 +38,7 @@ namespace FlighPlanner.Controllers
         }
 
         [HttpGet]
+        [EnableCors]
         [Route("flights/{id}")]
         public IActionResult FindFlights(int id)
         {

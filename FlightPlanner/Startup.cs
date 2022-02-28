@@ -1,46 +1,76 @@
-﻿using FlighPlanner.Handler;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication;
+using FlighPlanner.Handler;
+using FlighPlanner.Storage;
 
-namespace FlighPlanner
+namespace FlightPlanner
 {
-    public static class Startup
+    public class Startup
     {
-        public static WebApplication InitializeApp(string[] args)
+        public Startup(IConfiguration configuration)
         {
-            var builder = WebApplication.CreateBuilder(args);
-            ConfigureServices(builder);
-            var app = builder.Build();
-            Configure(app);
-            return app;
+            Configuration = configuration;
         }
 
-        private static void ConfigureServices(WebApplicationBuilder builder)
+        public IConfiguration Configuration { get; }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
         {
-            builder.Services.AddControllers();
-            
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-            builder.Services.AddAuthentication("BasicAuthentication")
-            .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
 
-
-        }
-
-        private static void Configure(WebApplication app)
-        {
-            if (app.Environment.IsDevelopment())
+            services.AddControllers();
+            services.AddSwaggerGen(c =>
             {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FlightPlanner", Version = "v1" });
+            });
+
+            services.AddDbContext<FlightPlannerDbContext>(ServiceLifetime.Scoped);
+
+            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+            {
+                builder.WithOrigins("http://localhost:4200")
+                .AllowAnyHeader()
+                   .AllowCredentials()
+                    .AllowAnyMethod();
+
+            }));
+            services.AddAuthentication("BasicAuthentication")
+                .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FlightPlanner v1"));
             }
 
             app.UseRouting();
-
+            app.UseCors(builder =>
+            {
+                builder.WithOrigins("http://localhost:4200")
+                                       .AllowAnyHeader()
+                                          .AllowCredentials()
+                                           .AllowAnyMethod();
+            });
             app.UseAuthentication();
             app.UseAuthorization();
 
-           app.MapControllers();    
+
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }

@@ -25,6 +25,20 @@ namespace FlighPlanner.Storage
             return flight;
         }
 
+        public static Flight ConvertToFlight(AddFlightRequest request)
+        {
+            var flight = new Flight
+            {
+                From = request.From,
+                To = request.To,
+                Carrier = request.Carrier,
+                ArrivalTime = request.ArrivalTime,
+                DepartureTime = request.DepartureTime,
+            };
+
+            return flight;
+        }
+
         public static Flight GetFlight(int id)
         {
             return _flights.SingleOrDefault(flight => flight.Id == id);
