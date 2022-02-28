@@ -1,9 +1,8 @@
-﻿using FlighPlanner.Storage;
-using FlightPlanner.Storage;
+﻿using FlightPlanner.Storage;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FlighPlanner.Controllers
+namespace FlightPlanner.Controllers
 {
 
 

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 
-namespace FlighPlanner.Storage
+namespace FlightPlanner.Storage
 {
     public class FlightPlannerDbContext : DbContext
     {

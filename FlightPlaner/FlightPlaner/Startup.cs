@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using FlightPlanner.Handlers;
 using Microsoft.AspNetCore.Authentication;
+using FlightPlanner.Storage;
 
 namespace FlightPlanner
 {
@@ -27,6 +28,8 @@ namespace FlightPlanner
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "FlightPlanner", Version = "v1" });
             });
+
+            services.AddDbContext<FlightPlannerDbContext>(ServiceLifetime.Scoped);
             services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {
                 builder.WithOrigins("http://localhost:4200")

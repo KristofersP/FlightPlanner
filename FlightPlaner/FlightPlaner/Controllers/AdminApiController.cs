@@ -1,5 +1,4 @@
-﻿using FlighPlanner.Storage;
-using FlightPlanner.Models;
+﻿using FlightPlanner.Models;
 using FlightPlanner.Storage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
