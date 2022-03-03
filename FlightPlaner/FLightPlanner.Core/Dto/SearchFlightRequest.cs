@@ -1,4 +1,4 @@
-﻿namespace FlightPlanner.Models
+﻿namespace FlightPlanner.Core.Dto
 {
     public class SearchFlightRequest
     {

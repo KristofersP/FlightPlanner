@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FlightPlanner.Core.Dto;
+using FlightPlanner.Data;
 using FlightPlanner.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,8 +17,8 @@ namespace FlightPlanner.Storage
         {
             var flight = new Flight
             {
-                From = request.From,
-                To = request.To,
+                //From = request.From,
+                //To = request.To,
                 Carrier = request.Carrier,
                 ArrivalTime = request.ArrivalTime,
                 DepartureTime = request.DepartureTime,
@@ -38,8 +40,17 @@ namespace FlightPlanner.Storage
         {
             var flight = new Flight
             {
-                From = request.From,
-                To = request.To,
+                From = new Airport { 
+                    AirportName = request.From.Airport,
+                    City = request.From.City,
+                    Country = request.From.Country
+                },
+                To = new Airport
+                {
+                    AirportName = request.To.Airport,
+                    City = request.To.City,
+                    Country = request.To.Country
+                },
                 Carrier = request.Carrier,
                 ArrivalTime = request.ArrivalTime,
                 DepartureTime = request.DepartureTime,
@@ -113,8 +124,8 @@ namespace FlightPlanner.Storage
         {
 
             return _flights.Any(f => f.Carrier.ToLower().Trim() == request.Carrier.ToLower().Trim() && f.DepartureTime == request.DepartureTime &&
-        f.ArrivalTime == request.ArrivalTime && f.From.AirportName.ToLower().Trim() == request.From.AirportName.ToLower().Trim() &&
-        f.To.AirportName.ToLower().Trim() == request.To.AirportName.ToLower().Trim());
+        f.ArrivalTime == request.ArrivalTime && f.From.AirportName.ToLower().Trim() == request.From.Airport.ToLower().Trim() &&
+        f.To.AirportName.ToLower().Trim() == request.To.Airport.ToLower().Trim());
 
         }
 
@@ -135,24 +146,24 @@ namespace FlightPlanner.Storage
                 return false;
             }
 
-            if (string.IsNullOrEmpty(request.From.AirportName) || string.IsNullOrEmpty(request.From.City) || string.IsNullOrEmpty(request.From.Country))
+            if (string.IsNullOrEmpty(request.From.Airport) || string.IsNullOrEmpty(request.From.City) || string.IsNullOrEmpty(request.From.Country))
             {
                 return false;
             }
 
-            if (string.IsNullOrEmpty(request.From.AirportName) || string.IsNullOrEmpty(request.From.City) || string.IsNullOrEmpty(request.From.Country))
+            if (string.IsNullOrEmpty(request.From.Airport) || string.IsNullOrEmpty(request.From.City) || string.IsNullOrEmpty(request.From.Country))
             {
                 return false;
             }
 
-            if (string.IsNullOrEmpty(request.To.AirportName) || string.IsNullOrEmpty(request.To.City) || string.IsNullOrEmpty(request.To.Country))
+            if (string.IsNullOrEmpty(request.To.Airport) || string.IsNullOrEmpty(request.To.City) || string.IsNullOrEmpty(request.To.Country))
             {
                 return false;
             }
 
             if (request.From.Country.ToLower().Trim() == request.To.Country.ToLower().Trim() &&
                 request.From.City.ToLower().Trim() == request.To.City.ToLower().Trim() &&
-                request.From.AirportName.ToLower().Trim() == request.To.AirportName.ToLower().Trim())
+                request.From.Airport.ToLower().Trim() == request.To.Airport.ToLower().Trim())
             {
                 return false;
             }

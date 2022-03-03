@@ -7,6 +7,11 @@ using Microsoft.OpenApi.Models;
 using FlightPlanner.Handlers;
 using Microsoft.AspNetCore.Authentication;
 using FlightPlanner.Storage;
+using Microsoft.EntityFrameworkCore;
+using FlightPlanner.Data;
+using FlightPlanner.Core.Services;
+using FlightPlanner.Services;
+using FlightPlanner.Models;
 
 namespace FlightPlanner
 {
@@ -29,7 +34,22 @@ namespace FlightPlanner
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "FlightPlanner", Version = "v1" });
             });
 
-            services.AddDbContext<FlightPlannerDbContext>(ServiceLifetime.Scoped);
+            // services.AddDbContext<FlightPlannerDbContext>(ServiceLifetime.Scoped);
+
+            services.AddDbContext<FlightPlannerDbContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("flight-planner"));
+            });
+
+            services.AddTransient<IFlightPlannerDbContext, FlightPlannerDbContext>();
+            services.AddTransient<IDbService, DbService>();
+            services.AddTransient<IEntityService<Flight>, EntityService<Flight>>();
+            services.AddTransient<IEntityService<Airport>, EntityService<Airport>>();
+            services.AddTransient<IFlightService ,FlightService>();
+
+
+
+
             services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {
                 builder.WithOrigins("http://localhost:4200")
@@ -43,7 +63,6 @@ namespace FlightPlanner
 
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

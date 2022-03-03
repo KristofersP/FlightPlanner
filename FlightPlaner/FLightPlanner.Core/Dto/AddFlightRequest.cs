@@ -1,9 +1,11 @@
-﻿namespace FlightPlanner.Models
+﻿
+
+namespace FlightPlanner.Core.Dto
 {
     public class AddFlightRequest
     {
-        public Airport From { get; set; }
-        public Airport To { get; set; }
+        public AddAirportRequest From { get; set; }
+        public AddAirportRequest To { get; set; }
         public string Carrier { get; set; }
         public string DepartureTime { get; set; }
         public string ArrivalTime { get; set; }

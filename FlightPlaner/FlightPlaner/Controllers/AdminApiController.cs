@@ -1,4 +1,7 @@
-﻿using FlightPlanner.Models;
+﻿using FlightPlanner.Core.Dto;
+using FlightPlanner.Core.Services;
+using FlightPlanner.Data;
+using FlightPlanner.Models;
 using FlightPlanner.Storage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
@@ -15,10 +18,12 @@ namespace FlightPlanner.Controllers
     public class AdminApiController : ControllerBase
     {
         private static readonly object _lock = new object();
-        private readonly FlightPlannerDbContext _context;
+        private readonly IFlightService _flightService;
+        private readonly IFlightPlannerDbContext _context;
 
-        public AdminApiController(FlightPlannerDbContext context)
+        public AdminApiController(IFlightService flightService, IFlightPlannerDbContext context)
         {
+            _flightService = flightService;
             _context = context;
         }
 
@@ -28,10 +33,7 @@ namespace FlightPlanner.Controllers
         [Route("flights/{id}")]
         public IActionResult GetFlights(int id)
         {
-            var flight = _context.Flights
-                .Include(f => f.From)
-                .Include(f => f.To)
-                .SingleOrDefault(f => f.Id == id);
+            var flight = _flightService.GetFlightWithAirports(id);
 
             if (flight == null)
             {
@@ -48,19 +50,9 @@ namespace FlightPlanner.Controllers
         {
             lock (_lock)
             {
-                var flight = _context.Flights.Include(f => f.From)
-                    .Include(f => f.To)
-                    .SingleOrDefault(f => f.Id == id);
-
-                if (flight != null)
-                {
-                    _context.Flights.Remove(flight);
-                    _context.SaveChanges();
-                    return Ok();
-                }
+                _flightService.DeleteFlightById(id);
 
                 return Ok();
-
             }
         }
 
@@ -78,8 +70,7 @@ namespace FlightPlanner.Controllers
                     return Conflict();
 
                 var flight = FlightStorage.ConvertToFlight(request);
-                _context.Flights.Add(flight);
-                _context.SaveChanges();
+               _flightService.Create(flight);
 
                 return Created("", flight);
             }
@@ -91,8 +82,8 @@ namespace FlightPlanner.Controllers
             (f => f.Carrier.ToLower().Trim() == request.Carrier.ToLower().Trim() &&
             f.DepartureTime == request.DepartureTime &&
             f.ArrivalTime == request.ArrivalTime &&
-            f.From.AirportName.ToLower().Trim() == request.From.AirportName.ToLower().Trim() &&
-            f.To.AirportName.ToLower().Trim() == request.To.AirportName.ToLower().Trim());
+            f.From.AirportName.ToLower().Trim() == request.From.Airport.ToLower().Trim() &&
+            f.To.AirportName.ToLower().Trim() == request.To.Airport.ToLower().Trim());
         }
     }
 }
