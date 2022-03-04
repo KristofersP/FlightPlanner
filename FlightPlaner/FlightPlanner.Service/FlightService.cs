@@ -1,4 +1,5 @@
-﻿using FlightPlanner.Core.Services;
+﻿using FlightPlanner.Core.Dto;
+using FlightPlanner.Core.Services;
 using FlightPlanner.Data;
 using FlightPlanner.Models;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,16 @@ namespace FlightPlanner.Services
             {
                 Delete(flight);
             }
+        }
+
+        public bool FlightExistsInStorage(AddFlightRequest request)
+        {
+            return Query().Any
+            (f => f.Carrier.ToLower().Trim() == request.Carrier.ToLower().Trim() &&
+            f.DepartureTime == request.DepartureTime &&
+            f.ArrivalTime == request.ArrivalTime &&
+            f.From.AirportName.ToLower().Trim() == request.From.Airport.ToLower().Trim() &&
+            f.To.AirportName.ToLower().Trim() == request.To.Airport.ToLower().Trim());
         }
     }
 }
