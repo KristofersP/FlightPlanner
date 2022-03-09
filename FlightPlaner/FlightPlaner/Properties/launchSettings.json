@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "FlighPlanner": {
+    "FlightPlanner": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlighPlanner", "..\..\FlightPlanner\FlighPlanner.csproj", "{F990F96C-4B29-479B-9887-39F6006BF535}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightPlaner", "FlightPlaner\FlightPlaner.csproj", "{94A8BB30-29C4-4EF8-A5D3-E92DD43F6608}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F990F96C-4B29-479B-9887-39F6006BF535}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F990F96C-4B29-479B-9887-39F6006BF535}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F990F96C-4B29-479B-9887-39F6006BF535}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F990F96C-4B29-479B-9887-39F6006BF535}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94A8BB30-29C4-4EF8-A5D3-E92DD43F6608}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94A8BB30-29C4-4EF8-A5D3-E92DD43F6608}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94A8BB30-29C4-4EF8-A5D3-E92DD43F6608}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94A8BB30-29C4-4EF8-A5D3-E92DD43F6608}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {BF19E752-5BAE-4312-BF1C-FB30FDBD6654}
+		SolutionGuid = {748FFDCB-9E89-4D4F-B8C5-1F96A123A795}
 	EndGlobalSection
 EndGlobal

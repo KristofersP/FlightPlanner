@@ -1,4 +1,4 @@
-﻿namespace FlighPlanner.Models
+﻿namespace FlightPlanner.Models
 {
     public class SearchFlightRequest
     {
