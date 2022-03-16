@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FlightPlanner.Core.Dto;
+using FlightPlanner.Core.Services;
 
 namespace FlightPlanner.Services.Validators
 {
-    internal class FromAirportNameValidator
+    public class FromAirportNameValidator : IValidator
     {
+        public bool IsValid(AddFlightDto request)
+        {
+            return !string.IsNullOrEmpty(request?.From?.Airport);
+        }
     }
 }

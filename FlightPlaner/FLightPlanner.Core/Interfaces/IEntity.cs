@@ -1,5 +1,4 @@
-﻿
-namespace FlightPlanner.Core.Interfaces
+﻿namespace FlightPlanner.Core.Interfaces
 {
     public interface IEntity
     {

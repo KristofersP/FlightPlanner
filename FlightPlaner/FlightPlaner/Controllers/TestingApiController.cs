@@ -1,6 +1,4 @@
-﻿using FlightPlanner.Data;
-using FlightPlanner.Storage;
-using Microsoft.AspNetCore.Cors;
+﻿using FlightPlanner.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightPlanner.Controllers
@@ -11,11 +9,11 @@ namespace FlightPlanner.Controllers
     [ApiController]
     public class TestingController : ControllerBase
     {
-        private readonly FlightPlannerDbContext _context;
+        private readonly IDbExtendedService _service;
 
-        public TestingController(FlightPlannerDbContext context)
+        public TestingController(IDbExtendedService service)
         {
-            _context = context;
+            _service = service;
         }
 
 
@@ -23,10 +21,7 @@ namespace FlightPlanner.Controllers
         [Route("clear")]
         public IActionResult Clear()
         {
-            FlightStorage.ClearFlights();
-            _context.Flights.RemoveRange(_context.Flights);
-            _context.Airports.RemoveRange(_context.Airports);
-            _context.SaveChanges();
+            _service.DeleteAll();
             return Ok();
         }
 

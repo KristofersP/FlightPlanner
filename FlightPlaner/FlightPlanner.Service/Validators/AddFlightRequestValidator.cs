@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FlightPlanner.Core.Dto;
+using FlightPlanner.Core.Services;
 
 namespace FlightPlanner.Services.Validators
 {
-    internal class AddFlightRequestValidator
+    public class AddFlightRequestValidator : IValidator
     {
+        public bool IsValid(AddFlightDto request)
+        {
+            return request != null;
+        }
     }
 }

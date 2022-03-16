@@ -1,16 +1,19 @@
-﻿using FlightPlanner.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FlightPlanner.Core.Dto;
+using FlightPlanner.Models;
 
 namespace FlightPlanner.Core.Services
 {
     public interface IFlightService : IEntityService<Flight>
     {
-        public Flight GetFlightWithAirports(int id);
+        Flight GetFlightWithAirports(int id);
 
-        public void DeleteFlightById(int id); 
+        void DeleteFlightById(int id);
+
+        bool FlightExistsInStorage(AddFlightDto request);
+
+        public List<Airport> FindAirports(string search);
+
+        public PageResult SearchFlights(SearchFlightRequest request);
+
     }
 }

@@ -1,17 +1,14 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi.Models;
 using FlightPlanner.Handlers;
 using Microsoft.AspNetCore.Authentication;
-using FlightPlanner.Storage;
 using Microsoft.EntityFrameworkCore;
 using FlightPlanner.Data;
 using FlightPlanner.Core.Services;
 using FlightPlanner.Services;
 using FlightPlanner.Models;
+using FlightPlanner.Services.Validators;
+using FlightPlanner.Services.Mappers;
+using AutoMapper;
 
 namespace FlightPlanner
 {
@@ -43,9 +40,28 @@ namespace FlightPlanner
 
             services.AddTransient<IFlightPlannerDbContext, FlightPlannerDbContext>();
             services.AddTransient<IDbService, DbService>();
+            services.AddTransient<IDbExtendedService, DbExtendedService>();
             services.AddTransient<IEntityService<Flight>, EntityService<Flight>>();
             services.AddTransient<IEntityService<Airport>, EntityService<Airport>>();
             services.AddTransient<IFlightService ,FlightService>();
+            services.AddTransient<IValidator ,AddFlightRequestValidator>();
+            services.AddTransient<IValidator ,AirportNameEqualityValidator>();
+            services.AddTransient<IValidator ,ArrivalTimeValidator>();
+            services.AddTransient<IValidator ,CarrierValidator>();
+            services.AddTransient<IValidator ,DepartureTimeValidator>();
+            services.AddTransient<IValidator ,FromAirportCityValidator>();
+            services.AddTransient<IValidator ,FromAirportCountryValidator>();
+            services.AddTransient<IValidator ,FromAirportNameValidator>();
+            services.AddTransient<IValidator ,FromAirportValidator>();
+            services.AddTransient<IValidator ,ToAirportCityValidator>();
+            services.AddTransient<IValidator ,ToAirportCountryValidator>();
+            services.AddTransient<IValidator ,ToAirportNameValidator>();
+            services.AddTransient<IValidator ,ToAirportValidator>();
+            services.AddTransient<IValidator ,TimeFrameValidator>();
+            services.AddTransient<ISearchValidator ,SearchFlightValidator>();
+            var mapper = AutoMapperConfig.CreateMapper();
+            services.AddSingleton<IMapper>(mapper);
+
 
 
 
