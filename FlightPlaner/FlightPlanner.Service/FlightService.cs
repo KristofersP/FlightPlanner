@@ -45,16 +45,11 @@ namespace FlightPlanner.Services
         {
             search = search.ToLower().Trim();
 
-            var fromAirport = _context.Flights.Where(f => f.From.AirportName.ToLower().Trim().Contains(search) ||
-            f.From.Country.ToLower().Trim().Contains(search) ||
-            f.From.City.ToLower().Trim().Contains(search)).Select(a => a.From);
+            var airport = _context.Airports.Where(f => f.AirportName.ToLower().Trim().Contains(search) ||
+            f.Country.ToLower().Trim().Contains(search) ||
+            f.City.ToLower().Trim().Contains(search));
 
-            
-            var toAirport = _context.Flights.Where(f => f.To.AirportName.ToLower().Trim().Contains(search) ||
-            f.To.Country.ToLower().Trim().Contains(search) ||
-            f.To.City.ToLower().Trim().Contains(search)).Select(a => a.To);
-
-            return fromAirport.Concat(toAirport).ToList();
+            return airport.ToList();
         }
 
         public PageResult SearchFlights(SearchFlightRequest request)

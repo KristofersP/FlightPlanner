@@ -26,23 +26,6 @@ namespace FlightPlanner.Controllers
             _mapper = mapper;
         }
 
-
-        [HttpGet]
-        [EnableCors]
-        [Route("flights/{id}")]
-        public IActionResult GetFlights(int id)
-        {
-            var flight = _flightService.GetFlightWithAirports(id);
-
-            if (flight == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(flight);
-        }
-
-
         [HttpDelete]
         [Route("flights/{id}")]
         public IActionResult DeleteFlights(int id)
@@ -73,6 +56,22 @@ namespace FlightPlanner.Controllers
 
                 return Created("", _mapper.Map<AddFlightDto>(flight));
             }
+        }
+
+        [HttpGet]
+        [EnableCors]
+        [Route("flights/{id}")]
+        [Authorize]
+        public IActionResult GetAdminFlights(int id)
+        {
+            var flight = _flightService.GetFlightWithAirports(id);
+
+            if (flight == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<AddFlightDto>(flight));
         }
     }
 }

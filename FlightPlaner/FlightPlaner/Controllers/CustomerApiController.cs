@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FlightPlanner.Core.Dto;
 using FlightPlanner.Core.Services;
+using FlightPlanner.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,12 +29,7 @@ namespace FlightPlanner.Controllers
         public IActionResult SearchAirports(string search)
         {
             var airports = _flightService.FindAirports(search);
-            var airportsDto = new List<AddAirportDto>();
-
-            foreach (var airport in airports)
-            {
-                airportsDto.Add(_mapper.Map<AddAirportDto>(airport));
-            }
+            var airportsDto = _mapper.Map<List<Airport>, List<AddAirportDto>>(airports);
 
             return Ok(airportsDto);
         }
@@ -42,15 +38,15 @@ namespace FlightPlanner.Controllers
         [Route("flights/search")]
         public IActionResult FindFlights(SearchFlightRequest request)
         {
-                if (_validators.All(v => v.IsValid(request)))
-                    return BadRequest();
+            if (_validators.All(v => v.IsValid(request)))
+                return BadRequest();
 
-                return Ok(_flightService.SearchFlights(request));
+            return Ok(_flightService.SearchFlights(request));
         }
 
         [HttpGet]
         [Route("flights/{id}")]
-        public IActionResult FindFlights(int id)
+        public IActionResult GetFlights(int id)
         {
             var flight = _flightService.GetFlightWithAirports(id);
 

@@ -11,9 +11,9 @@ namespace FlightPlanner.Core.Services
 
         bool FlightExistsInStorage(AddFlightDto request);
 
-        public List<Airport> FindAirports(string search);
+        List<Airport> FindAirports(string search);
 
-        public PageResult SearchFlights(SearchFlightRequest request);
+        PageResult SearchFlights(SearchFlightRequest request);
 
     }
 }
