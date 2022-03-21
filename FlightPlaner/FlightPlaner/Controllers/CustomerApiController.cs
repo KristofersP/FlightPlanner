@@ -1,8 +1,9 @@
-﻿using FlightPlanner.Models;
-using FlightPlanner.Storage;
+﻿using AutoMapper;
+using FlightPlanner.Core.Dto;
+using FlightPlanner.Core.Services;
+using FlightPlanner.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FlightPlanner.Controllers
 {
@@ -11,49 +12,50 @@ namespace FlightPlanner.Controllers
     [EnableCors]
     public class CustomerApiController : ControllerBase
     {
+        private static readonly object _lock = new object();
+        private readonly IFlightService _flightService;
+        private readonly IEnumerable<ISearchValidator> _validators;
+        private readonly IMapper _mapper;
 
-        private readonly FlightPlannerDbContext _context;
-
-        public CustomerApiController(FlightPlannerDbContext context)
+        public CustomerApiController(IFlightService flightService, IEnumerable<ISearchValidator> validators, IMapper mapper)
         {
-            _context = context;
+            _flightService = flightService;
+            _validators = validators;
+            _mapper = mapper;
         }
 
         [HttpGet]
         [Route("airports")]
         public IActionResult SearchAirports(string search)
         {
+            var airports = _flightService.FindAirports(search);
+            var airportsDto = _mapper.Map<List<Airport>, List<AddAirportDto>>(airports);
 
-            return Ok(FlightStorage.FindAirports(search, _context));
-
+            return Ok(airportsDto);
         }
 
         [HttpPost]
         [Route("flights/search")]
         public IActionResult FindFlights(SearchFlightRequest request)
         {
-            if (!FlightStorage.IsValidSearchFlights(request))
+            if (_validators.All(v => v.IsValid(request)))
                 return BadRequest();
 
-            
-            return Ok(FlightStorage.SearchFlights(request, _context));
+            return Ok(_flightService.SearchFlights(request));
         }
 
         [HttpGet]
         [Route("flights/{id}")]
-        public IActionResult FindFlights(int id)
+        public IActionResult GetFlights(int id)
         {
-            var flight = _context.Flights
-                .Include(f => f.From)
-                .Include(f => f.To)
-                .SingleOrDefault(f => f.Id == id);
+            var flight = _flightService.GetFlightWithAirports(id);
 
             if (flight == null)
             {
                 return NotFound();
             }
 
-            return Ok(flight);
+            return Ok(_mapper.Map<AddFlightDto>(flight));
         }
     }
 }

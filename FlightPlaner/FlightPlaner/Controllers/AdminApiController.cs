@@ -1,10 +1,10 @@
-﻿using FlightPlanner.Models;
-using FlightPlanner.Storage;
+﻿using AutoMapper;
+using FlightPlanner.Core.Dto;
+using FlightPlanner.Core.Services;
+using FlightPlanner.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace FlightPlanner.Controllers
 {
@@ -15,32 +15,16 @@ namespace FlightPlanner.Controllers
     public class AdminApiController : ControllerBase
     {
         private static readonly object _lock = new object();
-        private readonly FlightPlannerDbContext _context;
+        private readonly IFlightService _flightService;
+        private readonly IEnumerable<IValidator> _validators;
+        private readonly IMapper _mapper;
 
-        public AdminApiController(FlightPlannerDbContext context)
+        public AdminApiController(IFlightService flightService, IEnumerable<IValidator> validators, IMapper mapper)
         {
-            _context = context;
+            _flightService = flightService;
+            _validators = validators;
+            _mapper = mapper;
         }
-
-
-        [HttpGet]
-        [EnableCors]
-        [Route("flights/{id}")]
-        public IActionResult GetFlights(int id)
-        {
-            var flight = _context.Flights
-                .Include(f => f.From)
-                .Include(f => f.To)
-                .SingleOrDefault(f => f.Id == id);
-
-            if (flight == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(flight);
-        }
-
 
         [HttpDelete]
         [Route("flights/{id}")]
@@ -48,51 +32,46 @@ namespace FlightPlanner.Controllers
         {
             lock (_lock)
             {
-                var flight = _context.Flights.Include(f => f.From)
-                    .Include(f => f.To)
-                    .SingleOrDefault(f => f.Id == id);
-
-                if (flight != null)
-                {
-                    _context.Flights.Remove(flight);
-                    _context.SaveChanges();
-                    return Ok();
-                }
+                _flightService.DeleteFlightById(id);
 
                 return Ok();
-
             }
         }
 
 
         [HttpPut]
         [Route("flights")]
-        public IActionResult AddFlights(AddFlightRequest request)
+        public IActionResult AddFlights(AddFlightDto request)
         {
             lock (_lock)
             {
-                if (!FlightStorage.IsValid(request))
+                if (!_validators.All(v => v.IsValid(request)))
                     return BadRequest();
 
-                if (FlightExistsInStorage(request))
+                if (_flightService.FlightExistsInStorage(request))
                     return Conflict();
 
-                var flight = FlightStorage.ConvertToFlight(request);
-                _context.Flights.Add(flight);
-                _context.SaveChanges();
+                var flight = _mapper.Map<Flight>(request);
+               _flightService.Create(flight);
 
-                return Created("", flight);
+                return Created("", _mapper.Map<AddFlightDto>(flight));
             }
         }
 
-        private bool FlightExistsInStorage(AddFlightRequest request)
+        [HttpGet]
+        [EnableCors]
+        [Route("flights/{id}")]
+        [Authorize]
+        public IActionResult GetAdminFlights(int id)
         {
-            return _context.Flights.Any
-            (f => f.Carrier.ToLower().Trim() == request.Carrier.ToLower().Trim() &&
-            f.DepartureTime == request.DepartureTime &&
-            f.ArrivalTime == request.ArrivalTime &&
-            f.From.AirportName.ToLower().Trim() == request.From.AirportName.ToLower().Trim() &&
-            f.To.AirportName.ToLower().Trim() == request.To.AirportName.ToLower().Trim());
+            var flight = _flightService.GetFlightWithAirports(id);
+
+            if (flight == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<AddFlightDto>(flight));
         }
     }
 }
